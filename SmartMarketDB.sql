@@ -27,7 +27,7 @@ Foreign Key(FK_IdProveedor) References Proveedor(IdProveedor)
 --Crear tabla Categoria
 Create Table Categoria (
 IdCategoria Int Primary Key Identity(1,1),
-Nombre Varchar(100) Not Null,
+Nombre Varchar(100) Not Null
 );
 
 --Crear tabla Producto
@@ -56,13 +56,13 @@ IdCliente Int Primary Key Identity(1,1),
 Nombre Varchar(100) Not Null,
 Direccion Varchar(100) Not Null,
 Telefono Varchar(20) Not Null,
-Email Varchar(100) Unique Not Null,
+Email Varchar(100) Unique Not Null
 );
 
 --Crear tabla Venta
 Create Table Venta (
 IdVenta Int Primary Key Identity(1,1),
-fechaVenta DATE Not Null,
+FechaVenta DATE Not Null,
 FK_IdCliente int Not null,
 Foreign Key(FK_IdCliente) References Cliente(IdCliente)
 );
@@ -70,7 +70,7 @@ Foreign Key(FK_IdCliente) References Cliente(IdCliente)
 --Crear tabla Tipo
 Create Table Tipo (
 IdTipo Int Primary Key Identity(1,1),
-Tipo Varchar(20) Not Null,
+Tipo Varchar(20) Not Null
 );
 
 
@@ -87,5 +87,5 @@ FK_IdCompra int Not null,
 Foreign Key(FK_IdVenta) References Venta(IdVenta),
 Foreign Key(FK_IdTipo) References Tipo(IdTipo),
 Foreign Key(FK_IdProducto) References Producto(IdProducto),
-Foreign Key(FK_IdCompra) References Compra(IdCompra),
+Foreign Key(FK_IdCompra) References Compra(IdCompra)
 );
