@@ -227,3 +227,7 @@ END
 
 -- Ejemplo de uso para el producto 1
 select dbo.UltimoPrecioCompra(1)
+
+
+-- Respaldar la Base de Datos
+Backup Database SmartMarketDB to disk = 'C:\Respaldo\SmartMarketDB.bak'
