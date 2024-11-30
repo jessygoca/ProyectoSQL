@@ -188,4 +188,12 @@ inner join Cliente CTE on cte.IdCliente= v.FK_IdCliente;
 
 select * from Ventas
 
+-- Vista que refleja la cantidad de Inventario Disponible por Producto, con precio y Categoría
+
+Create View v_InventarioDisponible
+AS
+Select p.Nombre AS Producto, p.PrecioProducto AS Precio, p.CantidadStock AS CantidaDisponible, C.Nombre AS Categoria from Producto P
+inner join Categoria C on p.FK_IdCategoria = c.IdCategoria
+
+select * from v_InventarioDisponible
 
