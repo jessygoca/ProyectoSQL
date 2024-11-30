@@ -197,3 +197,17 @@ inner join Categoria C on p.FK_IdCategoria = c.IdCategoria
 
 select * from v_InventarioDisponible
 
+-- Crear dos funciones Tipo Escalares
+
+-- Esta función retorna el precio del producto dado su ID
+
+Create Function PrecioProducto(@ProductoID INT)
+RETURNS int
+AS
+Begin
+Return (select p.PrecioProducto from Producto P
+Where p.IdProducto = @ProductoID)
+END
+
+-- Ejemplo uso de la función
+Select dbo.PrecioProducto(1)
