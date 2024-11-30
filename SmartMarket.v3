@@ -1,0 +1,274 @@
+--Proyecto Smart Market 
+
+Create Database SmartMarketDB
+
+USE SmartMarketDB
+
+--Crear tabla Proveedor
+Create Table Proveedor (
+IdProveedor Int Primary Key Identity(1,1),
+Nombre Varchar(100) Not Null,
+Direccion Varchar(100) Not Null,
+Telefono Varchar(20) Not Null,
+Email Varchar(100) Unique Not Null,
+ContactoPrincipal Varchar(100) Not Null
+);
+
+--Crear tabla Compra
+Create Table Compra (
+IdCompra Int Primary Key Identity(1,1),
+FechaCompra DATE Not Null,
+Cantidad INT Not Null,
+FK_IdProveedor int Not null,
+Foreign Key(FK_IdProveedor) References Proveedor(IdProveedor)
+);
+
+--Crear tabla Categoria
+Create Table Categoria (
+IdCategoria Int Primary Key Identity(1,1),
+Nombre Varchar(100) Not Null
+);
+
+--Crear tabla Producto
+Create Table Producto (
+IdProducto Int Primary Key Identity(1,1),
+Nombre Varchar(100) Not Null,
+Descripcion Varchar(250) Not Null,
+PrecioProducto INT Not Null,
+CantidadStock INT Not Null,
+FK_IdCategoria int Not null,
+Foreign Key(FK_IdCategoria) References Categoria(IdCategoria)
+);
+
+--Crear tabla Suministrar
+Create Table Suministrar (
+IdSuministro Int Primary Key Identity(1,1),
+FK_IdProveedor int Not null,
+FK_IdProducto int Not null,
+Foreign Key(FK_IdProveedor) References Proveedor(IdProveedor),
+Foreign Key(FK_IdProducto) References Producto(IdProducto)
+);
+
+--Crear tabla Cliente
+Create Table Cliente (
+IdCliente Int Primary Key Identity(1,1),
+Nombre Varchar(100) Not Null,
+Direccion Varchar(100) Not Null,
+Telefono Varchar(20) Not Null,
+Email Varchar(100) Unique Not Null
+);
+
+--Crear tabla Venta
+Create Table Venta (
+IdVenta Int Primary Key Identity(1,1),
+FechaVenta DATE Not Null,
+FK_IdCliente int Not null,
+Foreign Key(FK_IdCliente) References Cliente(IdCliente)
+);
+
+--Crear tabla Tipo
+Create Table Tipo (
+IdTipo Int Primary Key Identity(1,1),
+Tipo Varchar(20) Not Null
+);
+
+
+--Crear tabla Transaccion
+Create Table Transaccion (
+IdTransaccion Int Primary Key Identity(1,1),
+CostoCompra INT Not Null,
+Cantidad INT Not Null,
+PrecioVenta INT Not Null,
+FK_IdVenta int Not null,
+FK_IdTipo int Not null,
+FK_IdProducto int Not null,
+FK_IdCompra int Not null,
+Foreign Key(FK_IdVenta) References Venta(IdVenta),
+Foreign Key(FK_IdTipo) References Tipo(IdTipo),
+Foreign Key(FK_IdProducto) References Producto(IdProducto),
+Foreign Key(FK_IdCompra) References Compra(IdCompra)
+);
+
+-- Insertar datos ficticios en la tabla Proveedor
+INSERT INTO Proveedor (Nombre, Direccion, Telefono, Email, ContactoPrincipal)
+VALUES ('Proveedor Celulares A', 'Av. Electrónica 123', '555-3001', 'proveedora@celulares.com', 'Juan Pérez'),
+('Proveedor Celulares B', 'Calle 5, Zona Comercial', '555-3002', 'proveedorb@celulares.com', 'Ana Gómez'),
+('Proveedor Celulares C', 'Calle Tecnológica 456', '555-3003', 'proveedorc@celulares.com', 'Carlos López'),
+('Proveedor Celulares D', 'Av. Digital 789', '555-3004', 'proveedord@celulares.com', 'Laura Martínez'),
+('Proveedor Celulares E', 'Calle 10, Zona Norte', '555-3005', 'proveedore@celulares.com', 'María Torres'),
+('Proveedor Celulares F', 'Calle Circuito 123', '555-3006', 'proveedorf@celulares.com', 'Luis Rodríguez'),
+('Proveedor Celulares G', 'Calle del Chip 456', '555-3007', 'proveedorg@celulares.com', 'Pedro Díaz'),
+('Proveedor Celulares H', 'Calle Innovación 789', '555-3008', 'proveedorh@celulares.com', 'Sofía Sánchez'),
+('Proveedor Celulares I', 'Plaza Central 101', '555-3009', 'proveedori@celulares.com', 'Javier Pérez'),
+('Proveedor Celulares J', 'Calle 1, Sector Sur', '555-3010', 'proveedorj@celulares.com', 'Isabel López');
+
+-- Insertar datos ficticios en la tabla Compra
+INSERT INTO Compra (FechaCompra, Cantidad, FK_IdProveedor)
+VALUES('2024-11-01', 50, 1),('2024-11-02', 100, 2),('2024-11-03', 30, 3),('2024-11-04', 200, 4),('2024-11-05', 150, 5),('2024-11-06', 120, 6),
+('2024-11-07', 80, 7),('2024-11-08', 300, 8),('2024-11-09', 60, 9),('2024-11-10', 170, 10);
+
+-- Insertar datos ficticios en la tabla Categoria
+INSERT INTO Categoria (Nombre)
+VALUES ('Smartphones'),('Accesorios'),('Tabletas'),('Cargadores'),('Baterías'),('Fundas'),('Audífonos'),('Smartwatches'),('Memorias'),('Cables');
+
+-- Insertar datos ficticios en la tabla Producto
+INSERT INTO Producto (Nombre, Descripcion, PrecioProducto, CantidadStock, FK_IdCategoria)
+VALUES('iPhone 15', 'Smartphone Apple con 128GB de almacenamiento', 1200, 100, 1),
+('Samsung Galaxy S24', 'Smartphone Samsung con cámara de 108MP', 950, 150, 1),
+('Xiaomi Redmi Note 12', 'Smartphone Xiaomi con 6GB de RAM y 128GB de memoria', 250, 200, 1),
+('AirPods Pro', 'Audífonos inalámbricos Apple con cancelación de ruido', 250, 100, 7),
+('Fundas para iPhone', 'Fundas protectoras para iPhone 12/13/14', 20, 300, 5),
+('Cargador Rápido Samsung', 'Cargador rápido de 25W para Galaxy', 30, 500, 4),
+('Batería externa Anker', 'Batería externa de 10000mAh', 40, 150, 5),
+('Apple Watch Series 8', 'Smartwatch Apple con monitoreo de salud', 400, 50, 8),
+('Memoria MicroSD 128GB', 'Tarjeta de memoria MicroSD de 128GB', 20, 400, 9),
+('Cable Lightning', 'Cable Lightning para iPhone y iPad', 15, 200, 10);
+
+-- Insertar datos ficticios en la tabla Suministrar
+INSERT INTO Suministrar (FK_IdProveedor, FK_IdProducto)
+VALUES(1, 1),(2, 2),(3, 3),(4, 4),(5, 5),(6, 6),(7, 7),(8, 8),(9, 9),(10, 10);
+
+-- Insertar datos ficticios en la tabla Cliente
+INSERT INTO Cliente (Nombre, Direccion, Telefono, Email)
+VALUES('José Pérez', 'Calle Ficticia 321', '555-4001', 'joseperez@correo.com'),
+('María García', 'Av. Libertad 654', '555-4002', 'mariagarcia@correo.com'),
+('Carlos Sánchez', 'Calle Mayor 987', '555-4003', 'carlossanchez@correo.com'),
+('Ana Rodríguez', 'Calle 4, Barrio E', '555-4004', 'anarodriguez@correo.com'),
+('Luis Martínez', 'Av. Panamericana 345', '555-4005', 'luismartinez@correo.com'),
+('Isabel Gómez', 'Calle Sol 678', '555-4006', 'isabelgomez@correo.com'),
+('Pedro Díaz', 'Calle Luna 234', '555-4007', 'pedrodiaz@correo.com'),
+('Sofía López', 'Calle del Mar 567', '555-4008', 'sofialopez@correo.com'),
+('Javier Torres', 'Calle 10, Sector B', '555-4009', 'javiertorres@correo.com'),
+('Laura Hernández', 'Calle Norte 890', '555-4010', 'laurahernandez@correo.com');
+
+-- Insertar datos ficticios en la tabla Venta
+INSERT INTO Venta (FechaVenta, FK_IdCliente)
+VALUES('2024-11-01', 1),('2024-11-02', 2),('2024-11-03', 3),('2024-11-04', 4),('2024-11-05', 5),('2024-11-06', 6),
+('2024-11-07', 7),('2024-11-08', 8),('2024-11-09', 9),('2024-11-10', 10);
+
+-- Insertar datos ficticios en la tabla Tipo
+INSERT INTO Tipo (Tipo)
+VALUES ('Contado'),('Crédito'),('Devolución'),('Garantía'),('Descuento'),('Promoción'),('Reembolso'),('Intercambio'),('Prepago'),('Recarga');
+
+-- Insertar datos ficticios en la tabla Transaccion
+INSERT INTO Transaccion (CostoCompra, Cantidad, PrecioVenta, FK_IdVenta, FK_IdTipo, FK_IdProducto, FK_IdCompra)
+VALUES(600, 2, 1200, 1, 1, 1, 1),(500, 3, 950, 2, 2, 2, 2),(750, 5, 1250, 3, 3, 3, 3),(30, 10, 50, 4, 4, 4, 4),
+(100, 20, 150, 5, 5, 5, 5),(200, 15, 300, 6, 6, 6, 6),(150, 8, 220, 7, 7, 7, 7),(50, 6, 100, 8, 8, 8, 8),(80, 12, 120, 9, 9, 9, 9),
+(60, 10, 100, 10, 10, 10, 10);
+
+
+-- Consulta ejemplo para ver ventas con nombre de cliente y producto con total
+
+SELECT V.IdVenta, V.FechaVenta, C.Nombre 'Nombre Cliente', P.Nombre 'Nombre Producto', 
+T.Cantidad, T.PrecioVenta, (T.Cantidad * T.PrecioVenta) TotalVenta FROM Venta V
+INNER JOIN Cliente C ON V.FK_IdCliente = C.IdCliente
+INNER JOIN Transaccion T ON V.IdVenta = T.FK_IdVenta
+INNER JOIN Producto P ON T.FK_IdProducto = P.IdProducto;
+
+
+-- Vistas 
+
+-- Vista que refleja las compras realizadas por cada proveedor
+Create View Compras
+AS
+Select c.FechaCompra, p.Nombre, pdto.Nombre AS Producto, t.Cantidad, t.CostoCompra, t.Cantidad*t.CostoCompra AS CompraTotal from Transaccion T
+inner join Compra C on t.FK_IdCompra = c.IdCompra
+inner join Producto PDTO on pdto.IdProducto = t.FK_IdProducto
+inner join Proveedor P on c.FK_IdProveedor = p.IdProveedor;
+
+select * from Compras
+
+-- Vista que refleja las ventas realizadas a cada cliente
+Create View Ventas
+AS
+Select v.FechaVenta, cte.Nombre, pdto.Nombre AS Producto, t.Cantidad, t.PrecioVenta, t.Cantidad*t.PrecioVenta AS VentaTotal from Transaccion T
+inner join Venta V on t.FK_IdVenta = v.IdVenta
+inner join Producto PDTO on pdto.IdProducto = t.FK_IdProducto
+inner join Cliente CTE on cte.IdCliente= v.FK_IdCliente;
+
+select * from Ventas
+
+-- Vista que refleja la cantidad de Inventario Disponible por Producto, con precio y Categoría
+
+Create View v_InventarioDisponible
+AS
+Select p.Nombre AS Producto, p.PrecioProducto AS Precio, p.CantidadStock AS CantidaDisponible, C.Nombre AS Categoria from Producto P
+inner join Categoria C on p.FK_IdCategoria = c.IdCategoria
+
+select * from v_InventarioDisponible
+
+-- Crear dos funciones Tipo Escalares
+
+-- Esta función retorna el precio del producto dado su ID
+
+Create Function PrecioProducto(@ProductoID INT)
+RETURNS int
+AS
+Begin
+Return (select p.PrecioProducto from Producto P
+Where p.IdProducto = @ProductoID)
+END
+
+-- Ejemplo uso de la función
+Select dbo.PrecioProducto(1)
+
+-- Crea la función de último precio de un producto que se compró, a partir de su ID de producto
+
+Create Function UltimoPrecioCompra (@ProductoID INT)
+Returns Int
+AS
+Begin
+Return (
+select TOP 1 t.CostoCompra from Transaccion T
+Where t.FK_IdProducto = @ProductoID
+order by t.IdTransaccion DESC
+)
+END
+
+-- Ejemplo de uso para el producto 1
+select dbo.UltimoPrecioCompra(1)
+
+
+--Procedimiento almacenado para consultar ventas
+
+CREATE PROCEDURE ConsultarVentas
+AS
+BEGIN
+    SELECT 
+        V.IdVenta, 
+        V.FechaVenta, 
+        C.Nombre AS 'Nombre Cliente', 
+        P.Nombre AS 'Nombre Producto', 
+        T.Cantidad, 
+        T.PrecioVenta, 
+        (T.Cantidad * T.PrecioVenta) AS TotalVenta 
+    FROM Venta V
+    INNER JOIN Cliente C ON V.FK_IdCliente = C.IdCliente
+    INNER JOIN Transaccion T ON V.IdVenta = T.FK_IdVenta
+    INNER JOIN Producto P ON T.FK_IdProducto = P.IdProducto;
+END;
+
+
+EXEC ConsultarVentas;
+
+-- Procedimiento almacenado para agregar un cliente
+CREATE PROCEDURE AgregarCliente
+    @Nombre VARCHAR(100),     -- Nombre del cliente
+    @Direccion VARCHAR(100),  -- Dirección del cliente
+    @Telefono VARCHAR(20),    -- Teléfono del cliente
+    @Email VARCHAR(100)       -- Correo electrónico del cliente
+AS
+BEGIN
+    -- Insertar un nuevo cliente en la tabla Cliente
+    INSERT INTO Cliente (Nombre, Direccion, Telefono, Email)
+    VALUES (@Nombre, @Direccion, @Telefono, @Email);
+END;
+
+--Ejecutar SP
+SELECT * FROM Cliente
+
+EXEC AgregarCliente 
+    @Nombre = 'Maria Brenes',
+    @Direccion = 'Av. Siempre Viva 123',
+    @Telefono = '555-1234567',
+    @Email = 'mari@example.com';
