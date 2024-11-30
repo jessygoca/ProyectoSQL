@@ -272,3 +272,49 @@ EXEC AgregarCliente
     @Direccion = 'Av. Siempre Viva 123',
     @Telefono = '555-1234567',
     @Email = 'mari@example.com';
+
+--Funcion Tabla
+
+Create Function TotalVentasPorClienteConNombre (@ClienteID INT)
+RETURNS TABLE
+AS
+RETURN
+(
+    SELECT 
+        C.Nombre AS NombreCliente,
+        SUM(T.Cantidad * T.PrecioVenta) AS TotalVentas
+    FROM 
+        Transaccion T
+    INNER JOIN Venta V ON T.FK_IdVenta = V.IdVenta
+    INNER JOIN Cliente C ON V.FK_IdCliente = C.IdCliente
+    WHERE V.FK_IdCliente = @ClienteID
+    GROUP BY C.Nombre
+);
+
+--Consulta con la funcion tabla
+SELECT * FROM dbo.TotalVentasPorClienteConNombre(10);
+
+-- Crear función tipo tabla para obtener las transacciones de un producto específico
+
+CREATE FUNCTION TransaccionesPorProducto(@ProductoId INT)
+RETURNS TABLE
+AS
+RETURN
+(
+    SELECT 
+        T.idTransaccion,
+        T.cantidad,
+        T.precioVenta,
+        T.cantidad * T.precioVenta AS totalTransaccion,
+        P.Nombre AS nombreProducto  -- Agregar el nombre del producto
+    FROM 
+        Transaccion T
+    INNER JOIN 
+        Producto P ON T.fk_idProducto = P.idProducto  -- Unir con la tabla Producto
+    WHERE 
+        T.fk_idProducto = @ProductoId
+);
+
+--Consultar la funcion tabla
+SELECT * FROM dbo.TransaccionesPorProducto(6);
+
