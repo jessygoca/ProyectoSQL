@@ -228,6 +228,108 @@ END
 -- Ejemplo de uso para el producto 1
 select dbo.UltimoPrecioCompra(1)
 
+--Stored procedures
+
+--Procedimiento almacenado para registrar venta
+
+CREATE PROCEDURE RegistrarVenta
+    @FechaVenta DATE,
+    @Cantidad INT,
+    @PrecioVenta INT,
+    @FK_IdCliente INT,
+    @FK_IdProducto INT
+AS
+BEGIN
+    BEGIN TRANSACTION;
+    BEGIN TRY
+        -- Registrar la venta y obtener su ID
+        DECLARE @IdVenta INT;
+        INSERT INTO Venta (FechaVenta, FK_IdCliente)
+        VALUES (@FechaVenta, @FK_IdCliente);
+        SET @IdVenta = SCOPE_IDENTITY();
+
+        -- Actualizar stock y registrar la transacción
+        UPDATE Producto SET CantidadStock = CantidadStock - @Cantidad WHERE IdProducto = @FK_IdProducto;
+        INSERT INTO Transaccion (Cantidad, PrecioVenta, CostoCompra, FK_IdTipo, FK_IdProducto, FK_IdVenta)
+        VALUES (@Cantidad, @PrecioVenta, 0, 2, @FK_IdProducto, @IdVenta);
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH;
+END;
+
+
+ALTER TABLE Transaccion
+ALTER COLUMN FK_IdCompra INT NULL;--Se modifica la tabla transaccion para que acepte nulo en compra ya que esto es una venta
+
+
+--Ejecutar el SP
+
+EXEC RegistrarVenta
+    @FechaVenta = '2024-11-30',  -- Fecha de la venta
+    @Cantidad = 5,                -- Cantidad de productos vendidos
+    @PrecioVenta = 20,           -- Precio de venta por unidad
+    @FK_IdCliente = 1,            -- ID del cliente
+    @FK_IdProducto = 4;          -- ID del producto
+
+SELECT * FROM Venta
+SELECT * FROM Producto
+
+--Procedimiento almacenado para registrar compra
+
+CREATE PROCEDURE RegistrarCompra
+    @FechaCompra DATE,
+    @Cantidad INT,
+    @FK_IdProveedor INT,
+    @FK_IdProducto INT,
+    @CostoCompra INT
+AS
+BEGIN
+    BEGIN TRANSACTION;
+
+    BEGIN TRY
+        -- Insertar nueva compra
+        INSERT INTO Compra (FechaCompra, Cantidad, FK_IdProveedor)
+        VALUES (@FechaCompra, @Cantidad, @FK_IdProveedor);
+
+        -- Obtener el IdCompra recién creado
+        DECLARE @IdCompra INT = SCOPE_IDENTITY();
+
+        -- Insertar transacción asociada a la compra
+        INSERT INTO Transaccion (CostoCompra, Cantidad, PrecioVenta, FK_IdVenta, FK_IdTipo, FK_IdProducto, FK_IdCompra)
+        VALUES (@CostoCompra, @Cantidad, 0, NULL, 1, @FK_IdProducto, @IdCompra);
+
+        -- Actualizar stock del producto
+        UPDATE Producto
+        SET CantidadStock = CantidadStock + @Cantidad
+        WHERE IdProducto = @FK_IdProducto;
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        -- Manejo de errores
+        THROW;
+    END CATCH;
+END;
+
+
+EXEC RegistrarCompra 
+    @FechaCompra = '2024-12-01',
+    @Cantidad = 50,
+    @FK_IdProveedor = 1,
+    @FK_IdProducto = 1,
+    @CostoCompra = 600;
+
+ALTER TABLE Transaccion
+ALTER COLUMN FK_IdVenta INT NULL;
+--Se modifica la tabla transaccion para que acepte nulo en venta ya que esto es una compra
+
+SELECT * FROM Compra
+SELECT * FROM Transaccion
 
 --Procedimiento almacenado para consultar ventas
 
@@ -275,6 +377,26 @@ EXEC AgregarCliente
 
 --Funcion Tabla
 
+--Consultar Productos bajo un nivel mínimo de stock
+
+CREATE FUNCTION ProductosBajoStock(@NivelMinimo INT)
+RETURNS TABLE
+AS
+RETURN
+(
+    SELECT 
+        Nombre, 
+        CantidadStock, 
+        PrecioProducto, 
+        (SELECT Nombre FROM Categoria WHERE IdCategoria = FK_IdCategoria) AS Categoria
+    FROM Producto
+    WHERE CantidadStock < @NivelMinimo
+);
+
+--Consulta productos con stock menor a 100
+SELECT * FROM dbo.ProductosBajoStock(100);
+
+
 Create Function TotalVentasPorClienteConNombre (@ClienteID INT)
 RETURNS TABLE
 AS
@@ -317,6 +439,7 @@ RETURN
 
 --Consultar la funcion tabla
 SELECT * FROM dbo.TransaccionesPorProducto(6);
+
 
 -- Respaldar la Base de Datos
 Backup Database SmartMarketDB to disk = 'C:\Respaldo\SmartMarketDB.bak'
