@@ -168,6 +168,7 @@ INNER JOIN Producto P ON T.FK_IdProducto = P.IdProducto;
 
 -- Vistas 
 
+-- Vista que refleja las compras realizadas por cada proveedor
 Create View Compras
 AS
 Select c.FechaCompra, p.Nombre, pdto.Nombre AS Producto, t.Cantidad, t.CostoCompra, t.Cantidad*t.CostoCompra AS CompraTotal from Transaccion T
@@ -176,5 +177,15 @@ inner join Producto PDTO on pdto.IdProducto = t.FK_IdProducto
 inner join Proveedor P on c.FK_IdProveedor = p.IdProveedor;
 
 select * from Compras
+
+-- Vista que refleja las ventas realizadas a cada cliente
+Create View Ventas
+AS
+Select v.FechaVenta, cte.Nombre, pdto.Nombre AS Producto, t.Cantidad, t.PrecioVenta, t.Cantidad*t.PrecioVenta AS VentaTotal from Transaccion T
+inner join Venta V on t.FK_IdVenta = v.IdVenta
+inner join Producto PDTO on pdto.IdProducto = t.FK_IdProducto
+inner join Cliente CTE on cte.IdCliente= v.FK_IdCliente;
+
+select * from Ventas
 
 
