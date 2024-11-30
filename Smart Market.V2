@@ -211,3 +211,19 @@ END
 
 -- Ejemplo uso de la función
 Select dbo.PrecioProducto(1)
+
+-- Crea la función de último precio de un producto que se compró, a partir de su ID de producto
+
+Create Function UltimoPrecioCompra (@ProductoID INT)
+Returns Int
+AS
+Begin
+Return (
+select TOP 1 t.CostoCompra from Transaccion T
+Where t.FK_IdProducto = @ProductoID
+order by t.IdTransaccion DESC
+)
+END
+
+-- Ejemplo de uso para el producto 1
+select dbo.UltimoPrecioCompra(1)
