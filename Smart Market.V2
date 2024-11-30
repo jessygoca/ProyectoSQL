@@ -164,3 +164,17 @@ T.Cantidad, T.PrecioVenta, (T.Cantidad * T.PrecioVenta) TotalVenta FROM Venta V
 INNER JOIN Cliente C ON V.FK_IdCliente = C.IdCliente
 INNER JOIN Transaccion T ON V.IdVenta = T.FK_IdVenta
 INNER JOIN Producto P ON T.FK_IdProducto = P.IdProducto;
+
+
+-- Vistas 
+
+Create View Compras
+AS
+Select c.FechaCompra, p.Nombre, pdto.Nombre AS Producto, t.Cantidad, t.CostoCompra, t.Cantidad*t.CostoCompra AS CompraTotal from Transaccion T
+inner join Compra C on t.FK_IdCompra = c.IdCompra
+inner join Producto PDTO on pdto.IdProducto = t.FK_IdProducto
+inner join Proveedor P on c.FK_IdProveedor = p.IdProveedor;
+
+select * from Compras
+
+
